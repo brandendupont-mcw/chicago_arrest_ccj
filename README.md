@@ -1,6 +1,6 @@
 # Scrape Cook County's Jail Population Report 
 
-A Python script that collects Cook jail population and community correction data. 
+A Python script that collects Chicago Arrest Data
 
 # Visualization
 
