@@ -148,5 +148,5 @@ df.drop(columns=['ARRESTDATE2'], inplace=True)
 df['ArrestSort'] = 1
 df['Arrest'] = 'All Arrests'
 df['ArrestYear'] = df['arrest_date'].dt.year
-output_csv="data/Arrests.csv"
+output_csv="arrest.csv"
 df.to_csv(output_csv, index=False, encoding='utf-8')
