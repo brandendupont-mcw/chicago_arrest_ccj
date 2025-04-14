@@ -2,3 +2,4 @@ pandas
 numpy
 datetime
 geopandas
+azure-storage-blob

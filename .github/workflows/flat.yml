@@ -8,7 +8,10 @@ on:
       - .github/workflows/flat.yml
       - ./postprocess.ts
       
-  
+    
+env:
+  AZURE_BLOB: ${{ secrets.AZURE_BLOB }}
+
 jobs:
   scheduled:
     runs-on: ubuntu-latest

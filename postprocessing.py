@@ -2,6 +2,9 @@ import datetime
 import pandas as pd
 import numpy as np
 import geopandas as gpd
+from azure.storage.blob import BlobServiceClient, ContainerClient
+from io import BytesIO
+
 
 def arr_data_read(start_year = 2018, full_dataset = True):
     
