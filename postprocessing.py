@@ -183,12 +183,12 @@ df = df.merge(lookup,left_on=['charge_1_statute','charge_1_description'],right_o
 "data/CPD offense lookup - Arrests.csv"
 df.head()
 df.info()
-df['ARRESTDATE2'] = df['arrest_date']
-df['arrest_date'] = pd.to_datetime(df['ARRESTDATE2'], format='%m/%d/%Y', errors='coerce')
-df.drop(columns=['ARRESTDATE2'], inplace=True)
+df['ARRESTDATE'] = pd.to_datetime(df['Date'], errors='coerce')
+
+
 df['ArrestSort'] = 1
 df['Arrest'] = 'All Arrests'
-df['ArrestYear'] = df['arrest_date'].dt.year
+df['ArrestYear'] = df['ARRESTDATE'].dt.year
 output_csv="arrest.csv"
 ## df.to_csv(output_csv, index=False, encoding='utf-8')
 
