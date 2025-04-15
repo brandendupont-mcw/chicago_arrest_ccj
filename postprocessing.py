@@ -87,93 +87,50 @@ def arr_data_read(start_year = 2018, full_dataset = True):
 df = arr_data_read(start_year = 2018, full_dataset = True)
 df.columns
 df.head()
-df['FelonyMisdemeanorSort'] = np.nan
 
-df.loc[df['charge_1_type'] == 'F', 'FelonyMisdemeanorSort'] = 0
-df.loc[df['charge_1_type'] == 'M', 'FelonyMisdemeanorSort'] = 1
 
-felony_classes = ['1', '2', '3', '4', 'M']
-misdemeanor_classes = ['A', 'B', 'C']
+# 2. Map charge type to numeric (felony=0, misdemeanor=1)
+df["FelonyMisdemeanorSort"] = df["CHARGE1TYPE"].map({"F": 0, "M": 1})
 
-df.loc[df['FelonyMisdemeanorSort'].isna() & df['charge_1_class'].isin(felony_classes), 'FelonyMisdemeanorSort'] = 0
-df.loc[df['FelonyMisdemeanorSort'].isna() & df['charge_1_class'].isin(misdemeanor_classes), 'FelonyMisdemeanorSort'] = 1
-
-warrant_descs = [
-    'FUGITIVE FROM JUSTICE - OUT OF STATE WARRANT',
-    'ISSUANCE OF WARRANT',
-    'ISSUANCE OF WARRANT (ATTEMPT)',
-    'ISSUANCE OF WARRANT (CONSPIRACY)',
-    'ISSUANCE OF WARRANT (SOLICITATION)'
+# 3. Fill based on CHARGE1CLASS
+felony_classes = ["1", "2", "3", "4", "M"]
+misdemeanor_classes = ["A", "B", "C"]
+warrant_descriptions = [
+    "FUGITIVE FROM JUSTICE - OUT OF STATE WARRANT",
+    "ISSUANCE OF WARRANT",
+    "ISSUANCE OF WARRANT (ATTEMPT)",
+    "ISSUANCE OF WARRANT (CONSPIRACY)",
+    "ISSUANCE OF WARRANT (SOLICITATION)"
 ]
-df.loc[df['FelonyMisdemeanorSort'].isna() & df['charge_1_description'].isin(warrant_descs), 'FelonyMisdemeanorSort'] = 2
-df.loc[df['FelonyMisdemeanorSort'].isna(), 'FelonyMisdemeanorSort'] = 3
 
-felony_map = {
-    0: 'Felony',
-    1: 'Misdemeanor',
-    2: 'Warrant',
-    3: 'Other'
-}
-df['FelonyMisdemeanor'] = df['FelonyMisdemeanorSort'].map(felony_map)
-charge_map = {
-    (0, 'M'): 0,
-    (0, 'X'): 1,
-    (0, '1'): 2,
-    (0, '2'): 3,
-    (0, '3'): 4,
-    (0, '4'): 5,
-    (1, 'A'): 6,
-    (1, 'B'): 7,
-    (1, 'C'): 8,
-    (2, None): 9,
-    (3, None): 10,
-}
+df.loc[df["FelonyMisdemeanorSort"].isna() & df["CHARGE1CLASS"].isin(felony_classes), "FelonyMisdemeanorSort"] = 0
+df.loc[df["FelonyMisdemeanorSort"].isna() & df["CHARGE1CLASS"].isin(misdemeanor_classes), "FelonyMisdemeanorSort"] = 1
+df.loc[df["FelonyMisdemeanorSort"].isna() & df["CHARGE1DESCRIPTION"].isin(warrant_descriptions), "FelonyMisdemeanorSort"] = 2
+df["FelonyMisdemeanorSort"] = df["FelonyMisdemeanorSort"].fillna(3)
 
-df['ChargeClassSort'] = np.nan
-for (fms_val, class_val), sort_val in charge_map.items():
-    if class_val:
-        df.loc[(df['FelonyMisdemeanorSort'] == fms_val) & (df['charge_1_class'] == class_val), 'ChargeClassSort'] = sort_val
-    else:
-        df.loc[df['FelonyMisdemeanorSort'] == fms_val, 'ChargeClassSort'] = sort_val
+# 4. Label Felony/Misdemeanor
+charge_map = {0: "Felony", 1: "Misdemeanor", 2: "Warrant", 3: "Other"}
+df["FelonyMisdemeanor"] = df["FelonyMisdemeanorSort"].map(charge_map)
 
+# 5. Class sort
+# Custom mapping depending on class and FelonyMisdemeanorSort
+# (same logic as IF blocks in SPSS)
 
-df.loc[df['ChargeClassSort'].isna() & (df['FelonyMisdemeanorSort'] == 0), 'ChargeClassSort'] = 5
-df.loc[df['ChargeClassSort'].isna() & (df['FelonyMisdemeanorSort'] == 1), 'ChargeClassSort'] = 8
-
-charge_class_map = {
-    0: 'Murder',
-    1: 'Class X Felony',
-    2: 'Class 1 Felony',
-    3: 'Class 2 Felony',
-    4: 'Class 3 Felony',
-    5: 'Class 4 Felony',
-    6: 'Class A Misd.',
-    7: 'Class B Misd.',
-    8: 'Class C Misd.',
-    9: 'Warrant',
-    10: 'Other'
-}
-df['ChargeClass'] = df['ChargeClassSort'].map(charge_class_map)
-
+# 6. Race recode
 race_map = {
-    'AMER INDIAN / ALASKAN NATIVE': 4,
-    'ASIAN / PACIFIC ISLANDER': 3,
-    'BLACK': 1,
-    'BLACK HISPANIC': 2,
-    'UNKNOWN / REFUSED': 4,
-    'WHITE': 0,
-    'WHITE HISPANIC': 2
+    "AMER INDIAN / ALASKAN NATIVE": 4,
+    "ASIAN / PACIFIC ISLANDER": 3,
+    "BLACK": 1,
+    "BLACK HISPANIC": 2,
+    "UNKNOWN / REFUSED": 4,
+    "WHITE": 0,
+    "WHITE HISPANIC": 2
 }
-df['DefendantRaceSort'] = df['race'].map(race_map)
-
-defendant_race_map = {
-    0: 'White',
-    1: 'Black',
-    2: 'Hispanic',
-    3: 'Asian',
-    4: 'Another Race/Ethnicity'
+df["DefendantRaceSort"] = df["RACE"].map(race_map)
+race_label_map = {
+    0: "White", 1: "Black", 2: "Hispanic", 3: "Asian", 4: "Another Race/Ethnicity"
 }
-df['DefendantRace'] = df['DefendantRaceSort'].map(defendant_race_map)
+df["DefendantRace"] = df["DefendantRaceSort"].map(race_label_map)
 
 lookup_path = "data/CPD offense lookup - Arrests.csv"
 lookup = pd.read_csv(lookup_path)
@@ -181,14 +138,15 @@ lookup = pd.read_csv(lookup_path)
 lookup.head()
 df = df.merge(lookup,left_on=['charge_1_statute','charge_1_description'],right_on=['CHARGE1STATUTE', 'CHARGE1DESCRIPTION'], how='left')
 "data/CPD offense lookup - Arrests.csv"
-df.head()
-df.info()
 df['ARRESTDATE'] = pd.to_datetime(df['Date'], errors='coerce')
 
 
 df['ArrestSort'] = 1
 df['Arrest'] = 'All Arrests'
 df['ArrestYear'] = df['ARRESTDATE'].dt.year
+
+df.head()
+df.info()
 output_csv="arrest.csv"
 ## df.to_csv(output_csv, index=False, encoding='utf-8')
 
