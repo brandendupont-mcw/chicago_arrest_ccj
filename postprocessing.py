@@ -183,14 +183,13 @@ df = df.merge(lookup,left_on=['charge_1_statute','charge_1_description'],right_o
 "data/CPD offense lookup - Arrests.csv"
 df.head()
 df.info()
-df['ARRESTDATE'] = pd.to_datetime(df['Date'], errors='coerce')
+df['ARRESTDATE'] = pd.to_datetime(df['arrest_date'], errors='coerce')
 
 
 df['ArrestSort'] = 1
 df['Arrest'] = 'All Arrests'
 df['ArrestYear'] = df['ARRESTDATE'].dt.year
 output_csv="arrest.csv"
-## df.to_csv(output_csv, index=False, encoding='utf-8')
 
 azure_upload_df(container='data', df=df, filepath='/',\
                 filename= output_csv, con=API_KEY)
