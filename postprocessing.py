@@ -138,12 +138,14 @@ lookup = pd.read_csv(lookup_path)
 lookup.head()
 df = df.merge(lookup,left_on=['charge_1_statute','charge_1_description'],right_on=['CHARGE1STATUTE', 'CHARGE1DESCRIPTION'], how='left')
 
-df['ARRESTDATE'] = pd.to_datetime(df['arrest_date'], errors='coerce').dt.date
+df['ARRESTDATE'] = pd.to_datetime(df['arrest_date'], errors='coerce')
+
 
 
 df['ArrestSort'] = 1
 df['Arrest'] = 'All Arrests'
 df['ArrestYear'] = df['ARRESTDATE'].dt.year
+df['ARRESTDATE'] = df['ARRESTDATE'].dt.date
 
 df.head()
 df.info()
