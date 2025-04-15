@@ -90,7 +90,7 @@ df.head()
 
 
 # 2. Map charge type to numeric (felony=0, misdemeanor=1)
-df["FelonyMisdemeanorSort"] = df["CHARGE1TYPE"].map({"F": 0, "M": 1})
+df["FelonyMisdemeanorSort"] = df["charge_1_type"].map({"F": 0, "M": 1})
 
 # 3. Fill based on CHARGE1CLASS
 felony_classes = ["1", "2", "3", "4", "M"]
@@ -103,9 +103,9 @@ warrant_descriptions = [
     "ISSUANCE OF WARRANT (SOLICITATION)"
 ]
 
-df.loc[df["FelonyMisdemeanorSort"].isna() & df["CHARGE1CLASS"].isin(felony_classes), "FelonyMisdemeanorSort"] = 0
-df.loc[df["FelonyMisdemeanorSort"].isna() & df["CHARGE1CLASS"].isin(misdemeanor_classes), "FelonyMisdemeanorSort"] = 1
-df.loc[df["FelonyMisdemeanorSort"].isna() & df["CHARGE1DESCRIPTION"].isin(warrant_descriptions), "FelonyMisdemeanorSort"] = 2
+df.loc[df["FelonyMisdemeanorSort"].isna() & df["charge_1_class"].isin(felony_classes), "FelonyMisdemeanorSort"] = 0
+df.loc[df["FelonyMisdemeanorSort"].isna() & df["charge_1_class"].isin(misdemeanor_classes), "FelonyMisdemeanorSort"] = 1
+df.loc[df["FelonyMisdemeanorSort"].isna() & df["charge_1_description"].isin(warrant_descriptions), "FelonyMisdemeanorSort"] = 2
 df["FelonyMisdemeanorSort"] = df["FelonyMisdemeanorSort"].fillna(3)
 
 # 4. Label Felony/Misdemeanor
@@ -126,7 +126,7 @@ race_map = {
     "WHITE": 0,
     "WHITE HISPANIC": 2
 }
-df["DefendantRaceSort"] = df["RACE"].map(race_map)
+df["DefendantRaceSort"] = df["race"].map(race_map)
 race_label_map = {
     0: "White", 1: "Black", 2: "Hispanic", 3: "Asian", 4: "Another Race/Ethnicity"
 }
