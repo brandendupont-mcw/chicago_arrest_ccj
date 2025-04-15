@@ -148,7 +148,6 @@ df['ArrestYear'] = df['ARRESTDATE'].dt.year
 df.head()
 df.info()
 output_csv="arrest.csv"
-## df.to_csv(output_csv, index=False, encoding='utf-8')
 
 azure_upload_df(container='data', df=df, filepath='/',\
                 filename= output_csv, con=API_KEY)
