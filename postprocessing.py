@@ -138,7 +138,7 @@ lookup = pd.read_csv(lookup_path)
 lookup.head()
 df = df.merge(lookup,left_on=['charge_1_statute','charge_1_description'],right_on=['CHARGE1STATUTE', 'CHARGE1DESCRIPTION'], how='left')
 
-df['ARRESTDATE'] = pd.to_datetime(df['arrest_date'], errors='coerce')
+df['ARRESTDATE'] = pd.to_datetime(df['arrest_date'], errors='coerce').dt.date
 
 
 df['ArrestSort'] = 1
